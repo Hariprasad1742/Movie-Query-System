@@ -1,0 +1,46 @@
+
+//deletion
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/index.html');
+});
+
+
+app.post('/delete-movie', (req, res) => {
+  console.log('Received a delete movie request');
+  const ranking = parseInt(req.body.ranking);
+  console.log(ranking);
+
+  if (!ranking || isNaN(ranking)) {
+    console.log('Invalid movie ID provided');
+    res.json({ success: false, message: 'Invalid movie ID' });
+    return;
+  }
+
+  // Assuming you have initialized or imported the connection object properly
+  const deleteQuery = "DELETE FROM movies WHERE id = ?";
+
+  connection.query(deleteQuery, [ranking], (err, results) => {
+    if (err) {
+      console.error('Error executing delete query:', err);
+      res.json({ success: false, message: 'Error executing delete query' });
+      return;
+    }
+
+    console.log('Delete successful. Rows affected:', results.affectedRows);
+
+    // Assuming you want to close the connection after deleting
+    connection.end((err) => {
+      if (err) {
+        console.error('Error closing connection:', err);
+      }
+    });
+
+    console.log('Movie deleted successfully');
+    res.json({ success: true });
+  });
+
+  // ... rest of the code
+});

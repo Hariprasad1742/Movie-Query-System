@@ -1,0 +1,80 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+    background: #a7b0db url('background5.png') fixed center/cover no-repeat;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    position: relative;
+    color: rgb(231, 219, 219);
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    justify-content: center;
+}
+
+#buttonContainer {
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: transparent;
+    padding: 10px;
+    text-align: center;
+    z-index: 1000;
+}
+
+#buttonContainer button {
+    background-color: blue;
+    color: white;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+    border: none;
+    border-radius: 5px;
+}
+
+.inputContainer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+    margin-right: 100px;
+}
+
+#inputContainer {
+    float: left;
+    width: 50%;
+    padding: 20px;
+}
+
+#inputContainer input {
+    margin-bottom: 10px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 50%;
+    margin-top: 20px;
+}
+
+th, td {
+    border: 1px solid #564f4f;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: rgb(73, 206, 199);
+}
+
+td {
+    background-color: rgba(100, 106, 133, 0.7);
+}
+
+button {
+    margin: 10px;
+}

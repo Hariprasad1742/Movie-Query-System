@@ -1,0 +1,121 @@
+<!-- dashboard.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anime Search</title>
+  <style>
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Anime Dashboard</h1>
+
+  <button onclick="redirectToDashboard()">Go to Dashboard</button>
+  <label for="searchInput">Search by Title:</label>
+  <input type="text" id="searchInput" placeholder="Enter Title">
+  <button onclick="searchByTitle()">Search</button>
+
+  <table id="animeTable">
+    <!-- Table headers -->
+    <tr>
+      <th>Anime ID</th>
+      <th>Title</th>
+      <th>Type</th>
+      <th>Score</th>
+      <th>Scored By</th>
+      <th>Status</th>
+      <th>Episodes</th>
+      <th>Action</th>
+    </tr>
+    <!-- Table content will be dynamically filled -->
+  </table>
+
+  <h2>Selected Anime List</h2>
+  <ul id="selectedList"></ul>
+
+  <button onclick="addToLibrary()">Add Selected to Library</button>
+
+  <script>
+    function searchByTitle() {
+      var searchTerm = document.getElementById("searchInput").value;
+
+      // Perform a fetch to your server using a POST request with the search term
+      fetch('/search', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title: searchTerm }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Update the table with the fetched data
+        updateTable(data);
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+    }
+
+    function updateTable(data) {
+      var table = document.getElementById("animeTable");
+      // Clear existing table content (excluding headers)
+      while (table.rows.length > 1) {
+        table.deleteRow(1);
+      }
+
+      // Add new rows with fetched data
+      data.forEach(anime => {
+        var row = table.insertRow(table.rows.length);
+        Object.values(anime).forEach(value => {
+          var cell = row.insertCell(row.cells.length);
+          cell.textContent = value;
+        });
+
+        // Add "Add to Library" button
+        var actionCell = row.insertCell(row.cells.length);
+        var checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        actionCell.appendChild(checkbox);
+      });
+    }
+
+    function addToLibrary() {
+      var selectedAnimes = [];
+      var table = document.getElementById("animeTable");
+      for (var i = 1; i < table.rows.length; i++) {
+        var checkbox = table.rows[i].cells[table.rows[i].cells.length - 1].querySelector('input[type="checkbox"]');
+        if (checkbox.checked) {
+          var anime = { anime_id: table.rows[i].cells[0].textContent };
+          selectedAnimes.push(anime);
+        }
+      }
+
+      // Perform a fetch to your server to handle the selected animes
+      fetch('/addToLibrary', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ animes: selectedAnimes }),
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Added to Library:', data);
+      })
+      .catch(error => {
+        console.error('Error adding to Library:', error);
+      });
+    }
+
+    function redirectToDashboard() {
+      window.location.href = '/dashboard';
+    }
+  </script>
+</body>
+</html>

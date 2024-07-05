@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Movie Database</title>
+  <link rel="stylesheet" href="styles.css">
+
+</head>
+<header>
+
+  <div id="buttonContainer">
+    <div>
+          <h1>Movie Database Queries</h1>
+    </div>
+    <button onclick="fetchData('/movies', 'All Movies')">ALL MOVIES</button>
+    <button onclick="fetchData('/simpleQuery', 'Movies with the highest revenue in each genre')">LIST</button>
+    <button onclick="fetchData('/Query', 'metascore ranking')">Meta ranking</button>
+    <button onclick="fetchData('/rev', 'review')">review</button>
+    <button onclick=insertData1() id="insert1">Insert</button>
+    <button onclick="fetchData('/dir', 'director')">best directors</button>
+
+  </div>
+      
+  
+</header>
+<body>
+
+  <div>
+    <label for="searchInput">Search by Title:</label>
+    <input type="text" id="searchInput" placeholder="Enter Title">
+    <button onclick="searchByTitle()">Search</button>
+  </div>
+  <div id="resultContainer">
+    <!-- Movie details will be displayed here -->
+  </div>
+
+  <div id="inputContainer" style="display:none">
+    <h2>Insert Movie Data</h2>
+    <div id="div1">
+      <label for="ranking">Ranking:</label>
+      <input type="text" id="ranking" name="ranking">
+
+      <label for="title">Title:</label>
+      <input type="text" id="title" name="title">
+    </div>
+    <div id="div2">
+      <label for="genre">Genre:</label>
+      <input type="text" id="genre" name="genre">
+
+      <label for="director">Director:</label>
+      <input type="text" id="director" name="director">
+    </div>
+
+    <div id="div3">
+      <label for="actors">Actors:</label>
+      <input type="text" id="actors" name="actors">
+
+      <label for="year">Year:</label>
+      <input type="text" id="year" name="year">
+    </div>
+
+    <div id="div4">
+      <label for="runtime">Runtime (Minutes):</label>
+      <input type="text" id="runtime" name="runtime">
+
+      <label for="rating">Rating:</label>
+      <input type="text" id="rating" name="rating">
+    </div>
+
+    <div id="div5">
+      <label for="votes">Votes:</label>
+      <input type="text" id="votes" name="votes">
+
+      <label for="revenue">Revenue (Millions):</label>
+      <input type="text" id="revenue" name="revenue">
+    </div>
+
+    <div id="div6">
+      <label for="metascore">Metascore:</label>
+      <input type="text" id="metascore" name="metascore">
+
+      <button onclick="insertData()">Insert Movie</button>
+    </div>
+
+    <h1>Update Movie Details</h1>
+
+    <form id="updateForm">
+      <label for="rankingInput">Ranking:</label>
+      <input type="number" id="rankingInput" name="rankingInput" required>
+
+      <label for="titleInput">Title:</label>
+      <input type="text" id="titleInput" name="titleInput" required>
+
+      <label for="genreInput">Genre:</label>
+      <input type="text" id="genreInput" name="genreInput">
+
+      <!-- Add more input fields for other attributes as needed -->
+
+      <button type="button" onclick="updateMovieDetails()">Update</button>
+    </form>
+
+    <div id="updateResult">
+      <!-- Update result message will be displayed here -->
+    </div>
+
+  </div>
+    <div style="clear:both;"></div>
+
+    <h2 id="queryName"></h2>
+    <table id="resultTable"></table>
+
+    <div id="tableContainer">
+
+      <table id="mytable" style="display:none">
+
+        <tr>
+          <th>Title
+          <th>
+          <th>Director
+          <th>
+          <th>Genre
+          <th>
+          <th>Metascore
+          <th>
+          <th>Ranking
+          <th>
+          <th>Rating
+          <th>
+          <th>Revenue_Millions
+          <th>
+          <th>Review
+          <th>
+          <th>Runtime_Minutes
+          <th>
+          <th>Votes
+          <th>
+          <th>Year
+          <th>
+          <th>Actors
+          <th>
+        </tr>
+      </table>
+    </div>
+
+    <script>
+
+      function fetchData(endpoint, queryName) {
+        document.getElementById("mytable").style.display = "none";
+        document.getElementById("inputContainer").style.display="none";
+
+        fetch(endpoint)
+          .then(response => response.json())
+          .then(data => {
+            const resultTable = document.getElementById('resultTable');
+            resultTable.innerHTML = ''; // Clear table
+
+            // Create table header
+            const tableHeader = document.createElement('tr');
+            for (const key in data[0]) {
+              const th = document.createElement('th');
+              th.textContent = key;
+              tableHeader.appendChild(th);
+            }
+            resultTable.appendChild(tableHeader);
+
+            // Populate table with data
+            data.forEach(item => {
+              const tableRow = document.createElement('tr');
+              for (const key in item) {
+                const td = document.createElement('td');
+                td.textContent = item[key];
+                tableRow.appendChild(td);
+              }
+              resultTable.appendChild(tableRow);
+            });
+            const queryNameElement = document.getElementById('queryName');
+            queryNameElement.textContent = `Results for: ${queryName}`;
+          })
+          .catch(error => console.error('Error fetching data: ', error));
+      }
+
+
+      function insertData() {
+        const ranking = document.getElementById('ranking').value;
+        const title = document.getElementById('title').value;
+        const genre = document.getElementById('genre').value;
+        const director = document.getElementById('director').value;
+        const actors = document.getElementById('actors').value;
+        const year = document.getElementById('year').value;
+        const runtime = document.getElementById('runtime').value;
+        const rating = document.getElementById('rating').value;
+        const votes = document.getElementById('votes').value;
+        const revenue = document.getElementById('revenue').value;
+        const metascore = document.getElementById('metascore').value;
+
+        const requestData = {
+          ranking,
+          title,
+          genre,
+          director,
+          actors,
+          year,
+          runtime,
+          rating,
+          votes,
+          revenue,
+          metascore,
+        };
+
+        fetch('http://localhost:3000/insertData', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestData),
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error('Movie insertion failed');
+            }
+            return response.json();
+          })
+          .then(data => {
+            alert(data.message); // Display a pop-up alert
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('Movie insertion failed'); // Display a pop-up alert for failure
+          });
+      }
+
+     
+        function insertData1() {
+          document.getElementById("inputContainer").style.display="block";
+          
+        }
+      function searchByTitle() {
+        document.getElementById("mytable").style.display = "none";
+        var searchTerm = document.getElementById("searchInput").value;
+
+        // Log the search term to ensure it's captured correctly
+        console.log('Search Term:', searchTerm);
+
+        // Perform a fetch to your server using a POST request with the search term
+        fetch('/search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ title: searchTerm }),
+        })
+          .then(response => response.json())
+          .then(data => {
+            // Log the fetched data to ensure it's received correctly
+            console.log('Fetched Data:', data);
+
+            // Update the table with the fetched data
+            updateTable(data);
+          })
+          .catch(error => {
+            console.error('Error fetching data:', error);
+          });
+      }
+      function updateTable(data) {
+        const table = document.getElementById("mytable");
+        console.log("insideupdate", data);
+
+        // Display the table
+        table.style.display = "block";
+
+        // Define the table header
+        var tableHeader = `
+    <tr>
+      <th>Title</th>
+      <th>Director</th>
+      <th>Genre</th>
+      <th>Metascore</th>
+      <th>Ranking</th>
+      <th>Rating</th>
+      <th>Revenue_Millions</th>
+      <th>Review</th>
+      <th>Runtime_Minutes</th>
+      <th>Votes</th>
+      <th>Year</th>
+      <th>Actors</th>
+    </tr>
+  `;
+        table.innerHTML = tableHeader; // Use innerHTML instead of += to replace the content
+
+        // Clear existing rows in the table (excluding the header)
+        while (table.rows.length > 1) {
+          table.deleteRow(1);
+        }
+
+        // Define the table body
+        data.forEach((movie, index) => {
+          const row = table.insertRow(table.rows.length);
+
+          // Use the correct property names
+          var title = row.insertCell(0);
+          var director = row.insertCell(1);
+          var genre = row.insertCell(2);
+          var metascore = row.insertCell(3);
+          var ranking = row.insertCell(4);
+          var rating = row.insertCell(5);
+          var revenue = row.insertCell(6);
+          var review = row.insertCell(7);
+          var runtime = row.insertCell(8);
+          var votes = row.insertCell(9);
+          var year = row.insertCell(10);
+          var actors = row.insertCell(11);
+
+          // Set innerHTML using the correct property names
+          title.innerHTML = movie.Title;
+          director.innerHTML = movie.Director;
+          genre.innerHTML = movie.Genre;
+          metascore.innerHTML = movie.Metascore;
+          ranking.innerHTML = movie.Ranking;
+          rating.innerHTML = movie.Rating;
+          revenue.innerHTML = movie.Revenue_Millions;
+          review.innerHTML = movie.Review;
+          runtime.innerHTML = movie.Runtime_Minutes;
+          votes.innerHTML = movie.Votes;
+          year.innerHTML = movie.Year;
+          actors.innerHTML = movie.Actors;
+        });
+      }
+
+
+      function updateMovieDetails() {
+        document.getElementById("inputContainer").style.display="none";
+        // Get form data
+        const ranking = document.getElementById('rankingInput').value;
+        const title = document.getElementById('titleInput').value;
+        const genre = document.getElementById('genreInput').value;
+
+        // Add more lines to get other input fields
+
+        // Create a data object to send to the server
+        const data = {
+          ranking: ranking,
+          title: title,
+          genre: genre,
+          // Add more attributes here
+        };
+
+        // Make an AJAX request to the server
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', '/update', true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+
+        // Convert the data object to a JSON string
+        const jsonData = JSON.stringify(data);
+
+        // Set up the callback function to handle the response
+        xhr.onload = function () {
+          if (xhr.status === 200) {
+            // Update result message
+            document.getElementById('updateResult').innerHTML = 'Movie details updated successfully.';
+          } else {
+            // Handle errors
+            document.getElementById('updateResult').innerHTML = 'Error updating movie details.';
+          }
+        };
+
+        // Send the JSON data to the server
+        xhr.send(jsonData);
+      }
+
+    </script>
+
+</body>
+
+</html>
